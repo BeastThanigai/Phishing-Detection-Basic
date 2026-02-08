@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detection Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="container">
+        <h2>Phishing Detection Tool</h2>
+        <form id="phishingForm">
+            <label for="url">Enter URL:</label>
+            <input type="url" id="url" name="url" placeholder="https://example.com"><br>
+
+            <label for="message">Enter Message:</label>
+            <textarea id="message" name="message" rows="4" placeholder="Enter the message content"></textarea><br>
+
+            <button type="button" onclick="checkPhishing()">Check for Phishing</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function checkPhishing() {
+            const url = document.getElementById('url').value;
+            const message = document.getElementById('message').value;
+            const formData = new FormData();
+            formData.append('url', url);
+            formData.append('message', message);
+
+            fetch('/check_phishing', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+                if (data.phishing_detected) {
+                    resultDiv.innerHTML = '<div class="alert alert-danger">Warning: Potential phishing detected!</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-success">No phishing detected.</div>';
+                }
+
+                if (data.url_phishing) {
+                    resultDiv.innerHTML += '<p>Phishing URL detected.</p>';
+                }
+
+                if (data.message_phishing) {
+                    resultDiv.innerHTML += '<p>Suspicious keywords found in the message.</p>';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

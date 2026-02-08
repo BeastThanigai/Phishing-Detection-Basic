@@ -1,0 +1,3 @@
+https://phishingsite.com
+https://malicious-site.com
+http://example.com/badlink
